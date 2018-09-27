@@ -53,7 +53,6 @@
 (autoload 'srt-convert-sub-to-srt "subtitles" "" t)
 (autoload 'fastdef-insert "fastdef" nil t)
 (autoload 'fastdef-insert-from-history "fastdef" nil t)
-(autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 (autoload 'org-mime-htmlize "org-mime" nil t)
 (autoload 'org-mime-org-buffer-htmlize "org-mime" nil t)
 (autoload 'org-mime-org-subtree-htmlize "org-mime" nil t)
@@ -72,6 +71,7 @@
 (autoload 'eacl-complete-snippet "eacl" "")
 (autoload 'eacl-complete-tag "eacl" "")
 (autoload 'dropdown-list "dropdown-list" "")
+(autoload 'magit-commit-popup "magit" "")
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here

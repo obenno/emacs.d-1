@@ -23,7 +23,7 @@
     js-doc
     jss ; remote debugger of browser
     ;; {{ since stable v0.9.1 released, we go back to stable version
-    ;; ivy
+    ivy ; stable counsel dependent unstable ivy
     ;; counsel
     ;; swiper
     ;; }}
@@ -46,6 +46,7 @@
     hemisu-theme
     badger-theme
     distinguished-theme
+    challenger-deep-theme
     wgrep
     robe
     slime
@@ -65,10 +66,8 @@
     package-lint
     creole
     web
-    idomenu
     buffer-move
     regex-tool
-    quack
     legalese
     htmlize
     scratch
@@ -80,13 +79,15 @@
     pomodoro
     auto-compile
     packed
+    keyfreq
     gitconfig-mode
     textile-mode
     w3m
     erlang
     workgroups2
     zoutline
-    company-c-headers)
+    company-c-headers
+    company-statistics)
   "Packages to install from melpa-unstable.")
 
 (defvar melpa-stable-banned-packages nil
@@ -97,12 +98,21 @@
 (setq package-archives
       '(;; uncomment below line if you need use GNU ELPA
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
-        ;; ("localelpa" . "~/.emacs.d/localelpa/")
-        ;; ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/") ; github has some issue
-        ;; {{ backup repositories
-        ;; ("melpa" . "http://mirrors.163.com/elpa/melpa/")
-        ;; ("melpa-stable" . "http://mirrors.163.com/elpa/melpa-stable/")
+        ("localelpa" . "~/.emacs.d/localelpa/")
+
+        ;; ;; {{ 163 repository:
+        ;; ("melpa" . "https://mirrors.163.com/elpa/melpa/")
+        ;; ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/")
+        ;; ;; }}
+
+        ;; ;; {{ tsinghua repository (more stable than 163, recommended)
+        ;; ;;See https://mirror.tuna.tsinghua.edu.cn/help/elpa/ on usage:
+        ;; ;; ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+        ;; ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+        ;; ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")
+        ;; ;; ("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
         ;; }}
+
         ("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ))
@@ -135,11 +145,11 @@
       ((string= archive "melpa-stable")
        (setq rlt (not (memq package melpa-stable-banned-packages))))
       ((string= archive "melpa")
-       (message "package=%s" package)
-       ;; NO unstable packages with a few exceptions
-       (setq rlt (or (memq package melpa-include-packages)
+       ;; We still need use some unstable packages
+       (setq rlt (or (string-match-p (format "%s" package)
+                                     (mapconcat (lambda (s) (format "%s" s)) melpa-include-packages " "))
                       ;; color themes are welcomed
-                      (string-match (format "%s" package) "-theme"))))
+                      (string-match-p "-theme" (format "%s" package)))))
       (t
         ;; I'm not picky on other repositories
         (setq rlt t)))
@@ -222,7 +232,6 @@
 (require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
 (require-package 'counsel-bbdb)
-(require-package 'hl-sexp)
 (require-package 'ibuffer-vc)
 (require-package 'less-css-mode)
 (require-package 'move-text)
@@ -235,7 +244,6 @@
 (require-package 'session)
 (require-package 'unfill)
 (require-package 'w3m)
-(require-package 'idomenu)
 (require-package 'counsel-gtags)
 (require-package 'buffer-move)
 (require-package 'ace-window)
@@ -261,15 +269,15 @@
 (require-package 'git-link)
 (require-package 'cliphist)
 (require-package 'yasnippet)
+(require-package 'yasnippet-snippets)
 (require-package 'company)
 (require-package 'company-c-headers)
+(require-package 'company-statistics)
 (require-package 'elpy)
 (require-package 'legalese)
 (require-package 'simple-httpd)
 ;; (require-package 'git-gutter) ; use my patched version
-(require-package 'flx-ido)
 (require-package 'neotree)
-(require-package 'quack) ; for scheme
 (require-package 'hydra)
 (require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
 (require-package 'pyim)
@@ -293,19 +301,27 @@
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
+(require-package 'evil-lion)
+(require-package 'evil-args)
 (require-package 'slime)
 (require-package 'counsel-css)
 (require-package 'auto-package-update)
+(require-package 'keyfreq)
+(require-package 'adoc-mode) ; asciidoc files
+(require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
-(when *emacs24* (require-package 'color-theme))
+(when *emacs24*
+  (require-package 'color-theme)
+  ;; emms v5.0 need seq
+  (require-package 'seq))
 (when *emacs25*
   (require-package 'zenburn-theme)
   (require-package 'color-theme-sanityinc-solarized)
   (require-package 'color-theme-sanityinc-tomorrow)
   (require-package 'monokai-theme)
-  (require-package 'molokai-theme)
+  (require-package 'molokai-theme) ; recommended
   (require-package 'moe-theme)
-  (require-package 'cyberpunk-theme)
+  (require-package 'cyberpunk-theme) ; recommended
   (require-package 'ample-theme)
   (require-package 'gotham-theme)
   (require-package 'gruvbox-theme)
@@ -316,7 +332,8 @@
   (require-package 'ample-zen-theme)
   (require-package 'flatland-theme)
   (require-package 'clues-theme)
-  (require-package 'darkburn-theme)
+  (require-package 'darkburn-theme) ; recommended
+  (require-package 'dracula-theme) ; recommended
   (require-package 'soothe-theme)
   (require-package 'dakrone-theme)
   (require-package 'busybee-theme)
@@ -325,8 +342,9 @@
   (require-package 'heroku-theme)
   (require-package 'hemisu-theme)
   (require-package 'badger-theme)
-  (require-package 'distinguished-theme))
-; }}
+  (require-package 'distinguished-theme)
+  (require-package 'challenger-deep-theme))
+;; }}
 
 ;; kill buffer without my confirmation
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))

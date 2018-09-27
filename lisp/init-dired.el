@@ -47,30 +47,44 @@ if no files marked, always operate on current line in dired-mode
         (add-to-list 'my-dired-directory-history file))
       ad-do-it))))
 
+(defadvice dired-do-async-shell-command (around dired-do-async-shell-command activate)
+  "Mplayer scan dvd-ripped directory in dired correctly."
+  (let* ((args (ad-get-args 0))
+         (first-file (file-truename (and file-list (car file-list)))))
+    (cond
+     ((file-directory-p first-file)
+      (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"
+                                   (my-guess-mplayer-path)
+                                   first-file)))
+     (t
+      ad-do-it))))
+
 (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
-  (if (and (stringp ad-return-value) (string-match-p "^mplayer -quiet" ad-return-value))
-      (let* ((dir (file-name-as-directory (concat default-directory
-                                                  "Subs")))
-             basename)
-        (cond
-         ((file-exists-p (concat dir "English.sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/English")))
-         ((file-exists-p (concat dir "Chinese.sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/Chinese")))
-         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/" basename)))
-         ((file-exists-p (concat dir "English.srt"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -sub Subs/English.srt")))
-         ((file-exists-p (concat dir "Chinese.srt"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -sub Subs/Chinesesrt")))
-         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -sub Subs/" basename ".srt"))))))
+  (when (and (stringp ad-return-value)
+             (string-match-p "^mplayer -quiet" ad-return-value))
+    (let* ((dir (file-name-as-directory (concat default-directory
+                                                "Subs")))
+           (files (car (ad-get-args 0)))
+           basename)
+      (cond
+       ((file-exists-p (concat dir "English.sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -vobsub Subs/English")))
+       ((file-exists-p (concat dir "Chinese.sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -vobsub Subs/Chinese")))
+       ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -vobsub Subs/" basename)))
+       ((file-exists-p (concat dir "English.srt"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -sub Subs/English.srt")))
+       ((file-exists-p (concat dir "Chinese.srt"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -sub Subs/Chinesesrt")))
+       ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -sub Subs/" basename ".srt"))))))
   ad-return-value)
 
 ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
@@ -145,7 +159,7 @@ if no files marked, always operate on current line in dired-mode
 ;; }}
 
 ;; {{ try to re-play the last dired commands
-(defvar my-dired-shell-command-args-history nil
+(defvar my-dired-commands-history nil
   "History of `dired-do-shell-command' arguments.")
 (defun my-format-dired-args (args)
   (let* ((cmd (file-name-nondirectory (nth 0 args))))
@@ -154,26 +168,31 @@ if no files marked, always operate on current line in dired-mode
             (nth 2 args))))
 
 (defadvice dired-do-shell-command (before dired-do-shell-command-before-hack activate)
-  (add-to-list 'my-dired-shell-command-args-history
-               (list (my-format-dired-args (ad-get-args 0))
-                     default-directory
-                     (ad-get-args 0))))
+  (let* ((args (ad-get-args 0))
+         (files (nth 2 args)))
+    ;; only record command which operate on files
+    (when (and (listp files)
+               (> (length files) 0))
+      (add-to-list 'my-dired-commands-history
+                   (list (my-format-dired-args args)
+                         default-directory
+                         args)))))
 
-(defun my-dired-redo-last-shell-command ()
+(defun my-dired-redo-last-command ()
   "Redo last shell command."
   (interactive)
-  (let* ((info (car my-dired-shell-command-args-history)))
+  (let* ((info (car my-dired-commands-history)))
     (when info
       (let* ((default-directory (nth 1 info))
              (args (nth 2 info)))
         (apply 'dired-do-shell-command args)))))
 
-(defun my-dired-redo-previous-shell-command ()
-  "Redo previous shell command."
+(defun my-dired-redo-from-commands-history ()
+  "Redo one of previous shell commands."
   (interactive)
-  (when my-dired-shell-command-args-history
+  (when my-dired-commands-history
     (ivy-read "Previous dired shell commands:"
-              my-dired-shell-command-args-history
+              my-dired-commands-history
               :action
               (lambda (info)
                 (let* ((default-directory (nth 1 info))
