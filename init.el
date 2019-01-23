@@ -186,3 +186,9 @@
 ;;; no-byte-compile: t
 ;;; End:
 (put 'erase-buffer 'disabled nil)
+
+;; Define color theme
+;; Please note the color theme's name is "molokai"
+(when (or (display-graphic-p)
+          (string-match-p "256color"(getenv "TERM")))
+  (load-theme 'molokai t))
