@@ -75,7 +75,8 @@
   ;; (require 'cl-lib) ; it's built in since Emacs v24.3
   (require-init 'init-compat)
   (require-init 'init-utils)
-
+  (require-init 'init-color-theme) ;; enable color theme init
+  
   ;; Windows configuration, assuming that cygwin is installed at "c:/cygwin"
   ;; (condition-case nil
   ;;     (when *win64*
