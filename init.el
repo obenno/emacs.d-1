@@ -45,7 +45,7 @@
 ;; @see https://www.reddit.com/r/emacs/comments/55ork0/is_emacs_251_noticeably_slower_than_245_on_windows/
 ;; Emacs 25 does gc too frequently
 (when *emacs25*
-  ;; (setq garbage-collection-messages t) ; for debug
+  (setq garbage-collection-messages t) ; for debug
   (setq best-gc-cons-threshold (* 64 1024 1024))
   (setq gc-cons-percentage 0.5)
   (run-with-idle-timer 5 t #'garbage-collect))
@@ -73,14 +73,14 @@
 ;; ("\\`/[^/|:][^/|]*:" . tramp-file-name-handler)
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
-<<<<<<< HEAD
+;;<<<<<<< HEAD
 (let ((file-name-handler-alist nil))
-  (require-init 'init-autoload)
-  (require-init 'init-modeline)
-  ;; (require 'cl-lib) ; it's built in since Emacs v24.3
-  (require-init 'init-compat)
-  (require-init 'init-utils)
-  (require-init 'init-color-theme) ;; enable color theme init
+  (require 'init-autoload)
+  (require 'init-modeline)
+ ;; (require 'cl-lib) ; it's built in since Emacs v24.3
+  ;(require 'init-compat)
+  (require 'init-utils)
+  ;(require 'init-color-theme) ;; enable color theme init
   
   ;; Windows configuration, assuming that cygwin is installed at "c:/cygwin"
   ;; (condition-case nil
@@ -94,29 +94,29 @@
   ;;   (error
   ;;    (message "setup-cygwin failed, continue anyway")
   ;;    ))
-  (require-init 'init-elpa)
-  (require-init 'init-exec-path) ;; Set up $PATH
+  (require 'init-elpa)
+  (require 'init-exec-path) ;; Set up $PATH
   ;; any file use flyspell should be initialized after init-spelling.el
   ;; actually, I don't know which major-mode use flyspell.
-  (require-init 'init-spelling)
-  (require-init 'init-gui-frames)
-  (require-init 'init-uniquify)
-  (require-init 'init-ibuffer)
-  (require-init 'init-ivy)
-  (require-init 'init-hippie-expand)
-  (require-init 'init-windows)
-  (require-init 'init-markdown)
-  (require-init 'init-erlang)
-  (require-init 'init-javascript)
-  (require-init 'init-org)
-  (require-init 'init-css)
-  (require-init 'init-python-mode)
-  (require-init 'init-haskell)
-  (require-init 'init-ruby-mode)
-  (require-init 'init-lisp)
-  (require-init 'init-elisp)
-  (require-init 'init-yasnippet)
-=======
+  (require 'init-spelling)
+  (require 'init-gui-frames)
+  (require 'init-uniquify)
+  (require 'init-ibuffer)
+  (require 'init-ivy)
+  (require 'init-hippie-expand)
+  (require 'init-windows)
+  (require 'init-markdown)
+  (require 'init-erlang)
+  (require 'init-javascript)
+  (require 'init-org)
+  (require 'init-css)
+  ;(require 'init-python-mode)
+  (require 'init-haskell)
+  (require 'init-ruby-mode)
+  (require 'init-lisp)
+  (require 'init-elisp)
+  (require 'init-yasnippet))
+;;=======
 (let* ((file-name-handler-alist nil))
   ;; `package-initialize' takes 35% of startup time
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
@@ -144,7 +144,7 @@
   (require 'init-lisp)
   (require 'init-elisp)
   (require 'init-yasnippet)
->>>>>>> a983b7c1a0e543e91a844214f61754f9ee707c8e
+;;>>>>>>> a983b7c1a0e543e91a844214f61754f9ee707c8e
   ;; Use bookmark instead
   (require 'init-cc-mode)
   (require 'init-gud)
@@ -207,8 +207,8 @@
 ;;; End:
 (put 'erase-buffer 'disabled nil)
 
-;; Define color theme
-;; Please note the color theme's name is "molokai"
+;;; Define color theme
+;;; Please note the color theme's name is "molokai"
 (when (or (display-graphic-p)
           (string-match-p "256color"(getenv "TERM")))
-  (load-theme 'molokai t))
+  (load-theme 'monokai t))
