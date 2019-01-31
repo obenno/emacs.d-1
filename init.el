@@ -1,43 +1,43 @@
-;; -*- coding: utf-8; lexical-binding: t; -*-
-;; (advice-add #'package-initialize :after #'update-load-path)
+    ;; -*- coding: utf-8; lexical-binding: t; -*-
+    ;; (advice-add #'package-initialize :after #'update-load-path)
 
-;; Without this comment emacs25 adds (package-initialize) here
-;; (package-initialize)
+    ;; Without this comment emacs25 adds (package-initialize) here
+    ;; (package-initialize)
 
-(push (expand-file-name "~/.emacs.d/lisp") load-path)
+    (push (expand-file-name "~/.emacs.d/lisp") load-path)
 
-(let* ((minver "24.4"))
-  (when (version< emacs-version minver)
-    (error "Emacs v%s or higher is required." minver)))
+    (let* ((minver "24.4"))
+    (when (version< emacs-version minver)
+        (error "Emacs v%s or higher is required." minver)))
 
-(defvar best-gc-cons-threshold
-  4000000
-  "Best default gc threshold value.  Should NOT be too big!")
+    (defvar best-gc-cons-threshold
+    4000000
+    "Best default gc threshold value.  Should NOT be too big!")
 
-;; don't GC during startup to save time
-(setq gc-cons-threshold most-positive-fixnum)
+    ;; don't GC during startup to save time
+    (setq gc-cons-threshold most-positive-fixnum)
 
-(setq emacs-load-start-time (current-time))
+    (setq emacs-load-start-time (current-time))
 
-;; {{ emergency security fix
-;; https://bugs.debian.org/766397
-(eval-after-load "enriched"
-  '(defun enriched-decode-display-prop (start end &optional param)
-     (list start end)))
-;; }}
-;;----------------------------------------------------------------------------
-;; Which functionality to enable (use t or nil for true and false)
-;;----------------------------------------------------------------------------
-(setq *is-a-mac* (eq system-type 'darwin))
-(setq *win64* (eq system-type 'windows-nt))
-(setq *cygwin* (eq system-type 'cygwin) )
-(setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
-(setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
-(setq *emacs24* (>= emacs-major-version 24))
-(setq *emacs25* (>= emacs-major-version 25))
-(setq *emacs26* (>= emacs-major-version 26))
-(setq *no-memory* (cond
-                   (*is-a-mac*
+    ;; {{ emergency security fix
+    ;; https://bugs.debian.org/766397
+    (eval-after-load "enriched"
+    '(defun enriched-decode-display-prop (start end &optional param)
+        (list start end)))
+    ;; }}
+    ;;----------------------------------------------------------------------------
+    ;; Which functionality to enable (use t or nil for true and false)
+    ;;----------------------------------------------------------------------------
+    (setq *is-a-mac* (eq system-type 'darwin))
+    (setq *win64* (eq system-type 'windows-nt))
+    (setq *cygwin* (eq system-type 'cygwin) )
+    (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
+    (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
+    (setq *emacs24* (>= emacs-major-version 24))
+    (setq *emacs25* (>= emacs-major-version 25))
+    (setq *emacs26* (>= emacs-major-version 26))
+    (setq *no-memory* (cond
+                    (*is-a-mac*
                     (< (string-to-number (nth 1 (split-string (shell-command-to-string "sysctl hw.physmem")))) 4000000000))
                    (*linux* nil)
                    (t nil)))
@@ -212,3 +212,10 @@
 (when (or (display-graphic-p)
           (string-match-p "256color"(getenv "TERM")))
   (load-theme 'monokai t))
+
+;;; Activate AUCTex
+                                        ;(load "auctex.el" nil t t)
+;; Enable document parsing to get support for many packages
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
