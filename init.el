@@ -219,3 +219,8 @@
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 (setq-default TeX-master nil)
+
+;;; cperl-mode is preferred to perl-mode
+;;; "Brevity is the soul of wit" <foo at acm.org>
+;;; Add CPerl Mode, which is part of Emacs
+    (defalias 'perl-mode 'cperl-mode)
