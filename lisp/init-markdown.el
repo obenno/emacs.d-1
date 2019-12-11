@@ -2,6 +2,7 @@
 
 (setq auto-mode-alist
       (cons '("\\.\\(m[k]d\\|markdown\\)\\'" . markdown-mode) auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.\\(Rmd\\|Rmarkdown\\)\\'" . markdown-mode))
 
 (defun markdown-imenu-index ()
   (let* ((patterns '((nil "^#\\([# ]*[^#\n\r]+\\)" 1))))

@@ -5,6 +5,7 @@
     ;; (package-initialize)
 
     (push (expand-file-name "~/.emacs.d/lisp") load-path)
+    ;;(add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 
     (let* ((minver "24.4"))
     (when (version< emacs-version minver)
@@ -180,7 +181,9 @@
   (require 'init-shackle)
   (require 'init-dired)
   (require 'init-writting)
-
+  ;; Add ess
+  (require 'ess-site)
+  
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
@@ -219,8 +222,3 @@
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 (setq-default TeX-master nil)
-
-;;; cperl-mode is preferred to perl-mode
-;;; "Brevity is the soul of wit" <foo at acm.org>
-;;; Add CPerl Mode, which is part of Emacs
-    (defalias 'perl-mode 'cperl-mode)
